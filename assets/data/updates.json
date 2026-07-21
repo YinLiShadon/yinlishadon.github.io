@@ -2,21 +2,13 @@
   {
     "id": "upd-001",
     "type": "video",
-    "title": "【小游戏/Ttrusas】不完美平衡3",
-    "description": "游戏《不完美平衡3》(Imperfect Balance 3) 通关视频",
-    "plannedAt": "2026.07.21 18:00",
-    "cover": "assets/images/cover.svg"
-  },
-  {
-    "id": "upd-002",
-    "type": "video",
     "title": "【IC/整活/当IC遇到翻译器!】谷歌翻译20次IC角色与皮肤名称",
     "description": "当IC角色与皮肤名称遇到谷歌翻译，会发生什么？",
     "plannedAt": "2026.07.24 18:00",
     "cover": "assets/images/cover.svg"
   },
   {
-    "id": "upd-003",
+    "id": "upd-002",
     "type": "video",
     "title": "【IC/信息统计/游戏要素】游戏成就",
     "description": "IC成就信息统计视频",
@@ -24,7 +16,7 @@
     "cover": "assets/images/cover.svg"
   },
    {
-    "id": "upd-004",
+    "id": "upd-003",
     "type": "video",
     "title": "【IC/整活/当IC遇到翻译器!】谷歌翻译20次IC成就名称",
     "description": "当IC成就名称遇到谷歌翻译，会发生什么？",
