@@ -1,0 +1,21 @@
+[
+  {
+    "id": "ann-remakeaccomplished",
+    "title": "影特驿站重制完成！",
+    "description": "网站已重制完成，欢迎光临！",
+    "content": "影特驿站于2026/7/21重制完成，欢迎光临！",
+    "category": "网站建设公告",
+    "cover": "assets/images/cover.svg",
+    "publishTime": "2026.7.21 15:00"
+  },
+  {
+    "id": "ann-pauseupdateforsenior3",
+    "title": "​高三开学视频中止更新通知",
+    "description": "​高三开学视频中止更新通知",
+    "content": "由于本人迈入高三，故在2026/8/10 (开学) ~2027/6/9 11:30 (本人高考结束) 期间中止更新视频，敬请谅解！",
+    "category": "更新公告",
+    "cover": "assets/images/cover.svg",
+    "publishTime": "2026.07.16 09:45",
+    "externalUrl": "https://www.bilibili.com/opus/1225474218238410753"
+  }
+]

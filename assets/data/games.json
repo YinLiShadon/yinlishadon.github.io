@@ -1,0 +1,23 @@
+[
+  {
+    "id": "game-eatiwbtc",
+    "title": "吃掉小IC",
+    "description": "由@arcxingye的项目《吃掉小鹿乃》(EatKano) 改编而来\n吃掉小IC (I wanna be the Creator , 我想成为创造者)",
+    "content": "小游戏：吃掉小IC (I wanna be the Creator , 我想成为创造者)\n由网页游戏《吃掉小苹果》和@arcxingye的项目《吃掉小鹿乃》(EatKano) 改编而来\n版本v1.0.1",
+    "version": "v1.0.1",
+    "cover": "assets/images/cover.svg",
+    "publishTime": "2026.05.03 ??:??",
+    "updateTime": "2026.05.04 ??:??",
+    "externalUrl": "https://yinlishadon.github.io/EatIWBTC/",
+    "externalSites": [
+      {
+        "name": "本游戏链接",
+        "url": "https://yinlishadon.github.io/EatIWBTC/"
+      },
+      {
+        "name": "GitHub 仓库",
+        "url": "https://github.com/YinLiShadon/EatIWBTC"
+      }
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "site": {
+    "nameZh": "影顿驿站",
+    "nameEn": "Shadon Station",
+    "tagline": "殷离影顿 (YinLiShadon) 的个人网站",
+    "intro": [
+      "欢迎来到本网站！",
+      "影顿驿站（Shadon Station）是殷离影顿（YinLiShadon）的个人网站",
+      "包含视频、文章、工具、游戏等作品，公告、活动、违规公示等告示性内容，还配备个人更新计划",
+      "网站使用Trae AI中的MiniMax-M3模型搭建"
+    ]
+  },
+  "person": {
+    "nickname": "殷离影顿",
+    "alias": "YinLiShadon",
+    "bio": [
+      "【性别】男",
+      "【出生日期】2009/3/4 ",
+      "【身份】高三走读生/物化地选手/化学课代表/I人/业余杂食区创作者",
+      "主要发布IC、小游戏相关视频",
+      " 学业原因，更新缓慢，敬请谅解！ ",
+      " 学业+性格原因，暂不扩列，暂无个人群聊  "
+    ],
+    "avatar": "assets/images/avatar.svg",
+    "contacts": [
+      { "label": "哔哩哔哩", "value": "@殷离Shadon", "link": "https://space.bilibili.com/509101466" },
+      { "label": "GitHub", "value": "@YinLiShadon", "link": "https://github.com/YinLiShadon" }
+    ]
+  }
+}

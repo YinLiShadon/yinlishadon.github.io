@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>游戏 · 影顿驿站</title>
+  <meta name="description" content="影顿驿站的小游戏合集。">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/images/cover.svg">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+    <header class="main__header" id="mainHeader"></header>
+    <div id="listContent" class="loading">载入中</div>
+  </main>
+
+  <div id="modalRoot"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/list-page.js"></script>
+  <script>
+    (async function () {
+      ShadonCommon.bootstrap('game', {
+        title: '游戏',
+        hint: '本人(?)制作的小游戏',
+      });
+      try {
+        const data = await ShadonData.loadJSON('assets/data/games.json');
+        window.__games = data || [];
+        ShadonList.render({ container: '#listContent', data: data || [], kind: 'game' });
+      } catch (e) {
+        // 异常兜底：data.js 已统一返回空数组，此处按空数据渲染
+        const host = document.getElementById('listContent');
+        if (host) {
+          host.classList.remove('loading');
+          window.__games = [];
+          ShadonList.render({ container: '#listContent', data: [], kind: 'game' });
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

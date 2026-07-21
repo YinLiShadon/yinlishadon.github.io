@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>视频 · 影顿驿站</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/images/cover.svg">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+    <header class="main__header" id="mainHeader"></header>
+    <div id="listContent" class="loading">载入中</div>
+  </main>
+
+  <div id="modalRoot"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/list-page.js"></script>
+  <script>
+    (async function () {
+      ShadonCommon.bootstrap('videos', {
+        title: '视频',
+        subtitle: 'Videos · 系列聚合展示',
+        hint: '包含游戏、搞笑等视频',
+      });
+      try {
+        const data = await ShadonData.loadJSON('assets/data/videos.json');
+        window.__videos = data || [];
+        ShadonList.render({
+          container: '#listContent',
+          data: data || [],
+          kind: 'video',
+          seriesDescriptions: {
+            '小游戏 - Puzzlerama': '小游戏《Puzzlerama》(拼图连线) 相关视频',
+            '小游戏 - Ttursas': 'Ttursas开发的小游戏相关视频',
+            '杂项 - 纪念视频': '本人里程碑、生日、周年纪念视频',
+            'IC - 通关视频 - 每周挑战': '游戏《我想成为创造者》(I wanna be the Creator) 每周挑战地图通关视频',
+            'IC - 通关视频 - 玩家挑战': '游戏《我想成为创造者》(I wanna be the Creator) 玩家挑战地图合集通关视频',
+            'IC - 通关视频 - 自作自收': '游戏《我想成为创造者》(I wanna be the Creator) 自制地图通关视频',
+            'IC - 信息统计 - 游戏地图': '游戏《我想成为创造者》(I wanna be the Creator) 游戏地图信息统计视频，含官方地图和玩家自制地图',
+            'IC - 信息统计 - 游戏要素': '游戏《我想成为创造者》(I wanna be the Creator) 游戏要素信息统计视频，含音乐、皮肤等',
+            '整活 - 学科整活': '学科整活视频',
+            'IC - 整活 - 普通整活': '游戏《我想成为创造者》(I wanna be the Creator) 普通整活视频',
+            'IC - 整活 - 当IC遇到翻译器!': '游戏《我想成为创造者》(I wanna be the Creator) 翻译整活视频',
+          },
+        });
+      } catch (e) {
+        // 异常兜底：data.js 已统一返回空数组，此处按空数据渲染
+        const host = document.getElementById('listContent');
+        if (host) {
+          host.classList.remove('loading');
+          window.__videos = [];
+          ShadonList.render({ container: '#listContent', data: [], kind: 'video' });
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

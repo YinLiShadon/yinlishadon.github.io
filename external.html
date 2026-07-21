@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>即将离开影顿驿站</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/images/cover.svg">
+  <style>
+    .external-card {
+      max-width: 560px;
+      margin: 80px auto;
+      background: var(--inverse-bg);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      padding: 48px 44px;
+      box-shadow: var(--shadow-card);
+      text-align: center;
+    }
+    .external-card__icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 22px;
+      border-radius: 50%;
+      background: var(--control);
+      color: var(--inverse-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .external-card__title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--control-deep);
+      margin-bottom: 12px;
+    }
+    .external-card__desc {
+      font-size: 14px;
+      line-height: 1.85;
+      color: var(--text-soft);
+      margin-bottom: 28px;
+    }
+    .external-card__url {
+      display: block;
+      padding: 14px 16px;
+      background: var(--bg-soft);
+      border-left: 3px solid var(--control);
+      border-radius: var(--radius);
+      font-size: 12px;
+      color: var(--text);
+      word-break: break-all;
+      text-align: left;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+    .external-card__actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .external-card__actions .btn {
+      padding: 13px 16px;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+    .external-card__actions .btn[disabled] {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: var(--control);
+      color: var(--inverse-text);
+      pointer-events: none;
+    }
+    @media (max-width: 600px) {
+      .external-card { margin: 40px 20px; padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="main">
+    <div id="externalRoot"></div>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    (function () {
+      ShadonCommon.bootstrap('', { title: '', hint: '' });
+
+      const root = document.getElementById('externalRoot');
+      const params = new URLSearchParams(window.location.search);
+      const targetUrl = params.get('url') || '';
+      const fromName = params.get('from') || '外部网站';
+
+      // 简易 URL 校验
+      function isValidUrl(u) {
+        try {
+          const x = new URL(u);
+          return x.protocol === 'http:' || x.protocol === 'https:';
+        } catch (_) { return false; }
+      }
+
+      if (!isValidUrl(targetUrl)) {
+        root.innerHTML =
+          '<div class="external-card">' +
+            '<div class="external-card__icon">!</div>' +
+            '<div class="external-card__title">链接无效</div>' +
+            '<div class="external-card__desc">未提供有效的目标网址，无法跳转</div>' +
+            '<a class="btn btn--primary" href="javascript:history.length > 1 ? history.back() : (location.href = \'index.html\')">返回上一页</a>' +
+          '</div>';
+        return;
+      }
+
+      try {
+        const host = new URL(targetUrl).host;
+        document.querySelector('title').textContent = '前往 ' + host + ' · 影顿驿站';
+        var urlBox = '<span class="external-card__url">' + host + targetUrl.replace(/^https?:\/\/[^/]+/, '') + '</span>';
+      } catch (_) {
+        var urlBox = '<span class="external-card__url">' + targetUrl + '</span>';
+      }
+
+      root.innerHTML =
+        '<div class="external-card">' +
+          '<div class="external-card__icon">↗</div>' +
+          '<div class="external-card__title">即将离开影顿驿站</div>' +
+          '<div class="external-card__desc">你即将前往外部页面\n无法确认该网页的安全性，请谨慎访问</div>' +
+          urlBox +
+          '<div class="external-card__actions">' +
+            '<a class="btn" href="javascript:history.length > 1 ? history.back() : (location.href = \'index.html\')">取消</a>' +
+            '<button type="button" class="btn btn--primary" id="goExternal" disabled aria-disabled="true">继续访问 (3秒)</button>' +
+          '</div>' +
+        '</div>';
+
+      // 5 秒倒计时，倒计时结束前按钮不可点击
+      const goBtn = document.getElementById('goExternal');
+      if (goBtn) {
+        let countdown = 3;
+        const timer = setInterval(function () {
+          countdown--;
+          if (countdown <= 0) {
+            clearInterval(timer);
+            goBtn.disabled = false;
+            goBtn.removeAttribute('aria-disabled');
+            goBtn.textContent = '继续访问';
+            goBtn.addEventListener('click', function () {
+              if (goBtn.disabled) return;
+              window.open(targetUrl, '_blank', 'noopener,noreferrer');
+            });
+          } else {
+            goBtn.textContent = '继续访问 (' + countdown + '秒)';
+          }
+        }, 1000);
+      }
+    })();
+  </script>
+</body>
+</html>
