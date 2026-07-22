@@ -296,7 +296,8 @@
     let hostText = '';
     try {
       const u = new URL(url);
-      hostText = u.host + (u.pathname === '/' ? '' : u.pathname) + (u.search || '') + (u.hash || '');
+      // 显示完整 URL：协议 + 主机 + 路径 + 查询参数 + 哈希
+      hostText = (u.protocol || 'https:') + '//' + u.host + (u.pathname || '') + (u.search || '') + (u.hash || '');
     } catch (_) {
       hostText = url;
     }

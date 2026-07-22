@@ -15,6 +15,8 @@
    * @param {Array}  cfg.data 数据数组
    * @param {string} cfg.kind 'announcement' | 'activity' | 'video' | 'article' | 'tool' | 'violation'
    * @param {Object} [cfg.seriesDescriptions] 系列名 → 描述文本（仅 video / article 生效）
+   * @param {{key:string,dir:string}} [cfg.sort] 排序参数 { key, dir }
+   * @param {string} [cfg.query] 当前搜索关键词（用于高亮）
    */
   function render(cfg) {
     const host = typeof cfg.container === 'string'
@@ -23,6 +25,8 @@
     if (!host) return;
     const esc = ShadonData.escapeHTML;
     const data = cfg.data || [];
+    const sort = cfg.sort || { key: 'publishTime', dir: 'desc' };
+    const query = cfg.query || '';
 
     // 渲染完成后清除 loading 类，避免 ::before 残留黑点
     host.classList.remove('loading');
@@ -33,9 +37,9 @@
     }
 
     if (cfg.kind === 'video' || cfg.kind === 'article') {
-      host.innerHTML = renderGrouped(data, cfg.kind, esc, cfg.seriesDescriptions || {});
+      host.innerHTML = renderGrouped(data, cfg.kind, esc, cfg.seriesDescriptions || {}, sort, query);
     } else {
-      host.innerHTML = renderFlat(data, cfg.kind, esc);
+      host.innerHTML = renderFlat(data, cfg.kind, esc, query);
     }
 
     bindCardActions(host, cfg.kind);
@@ -53,12 +57,12 @@
     );
   }
 
-  function renderFlat(data, kind, esc) {
-    const cards = data.map(function (it) { return renderCard(it, kind, esc); }).join('');
+  function renderFlat(data, kind, esc, query) {
+    const cards = data.map(function (it) { return renderCard(it, kind, esc, query); }).join('');
     return '<section class="grid">' + cards + '</section>';
   }
 
-  function renderGrouped(data, kind, esc, descMap) {
+  function renderGrouped(data, kind, esc, descMap, sort, query) {
     // 按 series 分组，缺失归入「未分组」
     const groups = {};
     data.forEach(function (it) {
@@ -66,11 +70,21 @@
       if (!groups[key]) groups[key] = [];
       groups[key].push(it);
     });
-    // 按 EP 升序排序
+    // 组内排序：使用外部传入的 sort 参数（来自 filter-sort.js 的 ShadonFilter 比较器）
+    const cmp = function (a, b) {
+      if (sort.key === 'title') return ShadonFilter.compareTitle(a.title, b.title);
+      if (sort.key === 'ep')    return ShadonFilter.compareEp(a.ep, b.ep);
+      if (sort.key === 'updateTime') {
+        return ShadonFilter.compareTime(ShadonFilter.getUpdateValue(a), ShadonFilter.getUpdateValue(b));
+      }
+      return ShadonFilter.compareTime(
+        ShadonFilter.getPublishValue(a, kind),
+        ShadonFilter.getPublishValue(b, kind)
+      );
+    };
+    const mul = sort.dir === 'desc' ? -1 : 1;
     Object.keys(groups).forEach(function (k) {
-      groups[k].sort(function (a, b) {
-        return (a.ep || '').localeCompare(b.ep || '', 'zh', { numeric: true });
-      });
+      groups[k].sort(function (a, b) { return cmp(a, b) * mul; });
     });
     // 系列名排序
     const keys = Object.keys(groups).sort(function (a, b) {
@@ -81,7 +95,7 @@
 
     return keys.map(function (k) {
       const items = groups[k];
-      const cards = items.map(function (it) { return renderCard(it, kind, esc); }).join('');
+      const cards = items.map(function (it) { return renderCard(it, kind, esc, query); }).join('');
       const desc = descMap[k] || '';
       const open = readSeriesState(kind, k);
 
@@ -105,10 +119,10 @@
     }).join('');
   }
 
-  function renderCard(it, kind, esc) {
+  function renderCard(it, kind, esc, query) {
     const cover = esc(it.cover || 'assets/images/cover.svg');
-    const title = esc(it.title || '未命名');
-    const description = esc(it.description || '');
+    const title = ShadonFilter.highlight(it.title || '未命名', query);
+    const description = it.description ? ShadonFilter.highlight(it.description, query) : '';
     const externalUrl = (it.externalUrl || '').trim();
     const hasExternal = externalUrl && externalUrl !== '#';
     const externalSites = Array.isArray(it.externalSites) ? it.externalSites : null;
@@ -120,12 +134,12 @@
 
     let epTag = '';
     if (it.ep) {
-      epTag = '<span class="card__ep">' + esc(it.ep) + '</span>';
+      epTag = '<span class="card__ep">' + ShadonFilter.highlight(it.ep, query) + '</span>';
     }
 
     let seriesTag = '';
     if (it.series && kind !== 'video' && kind !== 'article') {
-      seriesTag = '<span class="card__series">' + esc(it.series) + '</span>';
+      seriesTag = '<span class="card__series">' + ShadonFilter.highlight(it.series, query) + '</span>';
     }
 
     let metaHTML = '';
@@ -140,7 +154,7 @@
       metaHTML = (
         '<div class="card__meta">' +
           // 视频 / 文章：删除系列栏目（系列信息保留在详情页元数据中）
-          (it.ep ? '<div class="row"><span class="key">编号</span><span class="val">' + esc(it.ep) + '</span></div>' : '') +
+          (it.ep ? '<div class="row"><span class="key">编号</span><span class="val">' + ShadonFilter.highlight(it.ep, query) + '</span></div>' : '') +
           '<div class="row"><span class="key">发布</span><span class="val">' + esc(it.publishTime || '—') + '</span></div>' +
           '<div class="row"><span class="key">更新</span><span class="val">' + esc(it.updateTime || '—') + '</span></div>' +
         '</div>'
@@ -148,7 +162,7 @@
     } else if (kind === 'tool' || kind === 'game') {
       metaHTML = (
         '<div class="card__meta">' +
-          (it.version ? '<div class="row"><span class="key">版本</span><span class="val">' + esc(it.version) + '</span></div>' : '') +
+          (it.version ? '<div class="row"><span class="key">版本</span><span class="val">' + ShadonFilter.highlight(it.version, query) + '</span></div>' : '') +
           '<div class="row"><span class="key">发布</span><span class="val">' + esc(it.publishTime || '—') + '</span></div>' +
           '<div class="row"><span class="key">更新</span><span class="val">' + esc(it.updateTime || '—') + '</span></div>' +
         '</div>'
@@ -173,15 +187,15 @@
     if (kind === 'violation') {
       violationExtras = (
         '<div class="card__extras">' +
-          (it.source ? '<div class="card__extra"><span class="extra-label">来源</span><span class="extra-val">' + esc(it.source) + '</span></div>' : '') +
-          (it.punishment ? '<div class="card__extra"><span class="extra-label">处罚</span><span class="extra-val">' + esc(it.punishment) + '</span></div>' : '') +
+          (it.source ? '<div class="card__extra"><span class="extra-label">来源</span><span class="extra-val">' + ShadonFilter.highlight(it.source, query) + '</span></div>' : '') +
+          (it.punishment ? '<div class="card__extra"><span class="extra-label">处罚</span><span class="extra-val">' + ShadonFilter.highlight(it.punishment, query) + '</span></div>' : '') +
         '</div>'
       );
     }
 
     return (
       '<article class="card" data-id="' + esc(it.id || '') + '">' +
-        '<div class="card__cover">' + epTag + '<img src="' + cover + '" alt="' + title + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=\'assets/images/cover.svg\'"></div>' +
+        '<div class="card__cover">' + epTag + '<img src="' + cover + '" alt="' + esc(it.title || '未命名') + '" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=\'assets/images/cover.svg\'"></div>' +
         '<div class="card__body">' +
           seriesTag +
           '<div class="card__title">' + title + '</div>' +
@@ -336,5 +350,5 @@
     });
   }
 
-  global.ShadonList = { render: render };
+  global.ShadonList = { render: render, openDetail: openDetail };
 })(window);

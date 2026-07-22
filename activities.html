@@ -21,6 +21,7 @@
   <script src="assets/js/common.js"></script>
   <script src="assets/js/modal.js"></script>
   <script src="assets/js/list-page.js"></script>
+  <script src="assets/js/filter-sort.js"></script>
   <script>
     (async function () {
       ShadonCommon.bootstrap('activities', {
@@ -31,14 +32,18 @@
       try {
         const data = await ShadonData.loadJSON('assets/data/activities.json');
         window.__activities = data || [];
-        ShadonList.render({ container: '#listContent', data: data || [], kind: 'activity' });
+        ShadonFilter.init({
+          container: '#listContent',
+          data: data || [],
+          kind: 'activity',
+        });
       } catch (e) {
         // 异常兜底：data.js 已统一返回空数组，此处按空数据渲染
         const host = document.getElementById('listContent');
         if (host) {
           host.classList.remove('loading');
           window.__activities = [];
-          ShadonList.render({ container: '#listContent', data: [], kind: 'activity' });
+          ShadonFilter.init({ container: '#listContent', data: [], kind: 'activity' });
         }
       }
     })();

@@ -245,7 +245,7 @@
     return (
       '<section class="detail__player">' +
         '<div class="detail__content-label">视频播放</div>' +
-        '<div class="player" data-player>' + body + renderFullscreenBtn() + '</div>' +
+        '<div class="player" data-player>' + body + renderFullscreenBtn() + renderRotateBtn() + '</div>' +
       '</section>'
     );
   }
@@ -271,13 +271,17 @@
     return (
       '<section class="detail__player">' +
         '<div class="detail__content-label">' + label + '</div>' +
-        '<div class="player" data-player>' + body + renderFullscreenBtn() + '</div>' +
+        '<div class="player" data-player>' + body + renderFullscreenBtn() + renderRotateBtn() + '</div>' +
       '</section>'
     );
   }
 
   function renderFullscreenBtn() {
     return '<button type="button" class="player__fullscreen" data-fullscreen aria-label="全屏">⛶</button>';
+  }
+
+  function renderRotateBtn() {
+    return '<button type="button" class="player__rotate" data-rotate aria-label="切换横竖屏">↻</button>';
   }
 
   function toEmbedUrl(url) {
@@ -312,6 +316,7 @@
   global.ShadonDetail = { init: init };
 
   // 全屏切换：把整个 .player 容器进入/退出全屏
+  // 退出时自动滚动回视频位置，并清除 is-portrait 状态
   function bindFullscreen() {
     const btns = document.querySelectorAll('[data-fullscreen]');
     if (!btns.length) return;
@@ -328,6 +333,38 @@
           const req = container.requestFullscreen || container.webkitRequestFullscreen || container.mozRequestFullScreen || container.msRequestFullscreen;
           if (req) req.call(container).catch(function () {});
         }
+
+        // 注册一次性 fullscreenchange 监听：退出全屏时滚动回视频并清理竖屏状态
+        const onFsChange = function () {
+          const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement);
+          if (!isFull) {
+            // 清理竖屏旋转状态
+            container.classList.remove('is-portrait');
+            const rot = container.querySelector('[data-rotate]');
+            if (rot) rot.textContent = '↻';
+            // 平滑滚动到视频位置
+            try {
+              container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch (_) { /* 忽略旧浏览器 */ }
+            document.removeEventListener('fullscreenchange', onFsChange);
+            document.removeEventListener('webkitfullscreenchange', onFsChange);
+          }
+        };
+        document.addEventListener('fullscreenchange', onFsChange);
+        document.addEventListener('webkitfullscreenchange', onFsChange);
+      });
+    });
+
+    // 旋转按钮：切换 .player 的 is-portrait 状态
+    const rotateBtns = document.querySelectorAll('[data-rotate]');
+    rotateBtns.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const player = btn.closest('.player');
+        if (!player) return;
+        player.classList.toggle('is-portrait');
+        btn.textContent = player.classList.contains('is-portrait') ? '↺' : '↻';
       });
     });
   }

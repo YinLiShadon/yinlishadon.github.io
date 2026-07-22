@@ -21,6 +21,7 @@
   <script src="assets/js/common.js"></script>
   <script src="assets/js/modal.js"></script>
   <script src="assets/js/list-page.js"></script>
+  <script src="assets/js/filter-sort.js"></script>
   <script>
     (async function () {
       ShadonCommon.bootstrap('videos', {
@@ -31,7 +32,7 @@
       try {
         const data = await ShadonData.loadJSON('assets/data/videos.json');
         window.__videos = data || [];
-        ShadonList.render({
+        ShadonFilter.init({
           container: '#listContent',
           data: data || [],
           kind: 'video',
@@ -55,7 +56,7 @@
         if (host) {
           host.classList.remove('loading');
           window.__videos = [];
-          ShadonList.render({ container: '#listContent', data: [], kind: 'video' });
+          ShadonFilter.init({ container: '#listContent', data: [], kind: 'video' });
         }
       }
     })();

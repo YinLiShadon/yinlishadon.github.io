@@ -3,11 +3,11 @@
     "id": "tool-iwbtcdialoggenerator",
     "title": "IC对话生成器",
     "description": "《我想成为创造者》(I wanna be the Creator) 对话编辑器\n使用Trae AI中的MiniMax-M3模型制作",
-    "content": "《我想成为创造者》(I wanna be the Creator) 对话编辑器 (二创工具)\n你可以使用它来创建和编辑对话以制作IC二创内容！\n由 殷离Shadon 制作，使用 Trae AI 生成，使用 MiniMax-M3 模型\n版本 2026.07.15a",
-    "version": "v2026.07.15a",
+    "content": "《我想成为创造者》(I wanna be the Creator) 对话编辑器 (二创工具)\n你可以使用它来创建和编辑对话以制作IC二创内容！\n由 殷离Shadon 制作，使用 Trae AI 生成，使用 MiniMax-M3 模型\n版本 2026.07.22a",
+    "version": "v2026.07.22a",
     "cover": "assets/images/cover.svg",
     "publishTime": "2026.07.13 ??:??",
-    "updateTime": "2026.07.15 ??:??",
+    "updateTime": "2026.07.22 ??:??",
     "externalUrl": "https://yinlishadon.github.io/IWBTCDialogGenerator/",
     "externalSites": [
       {
